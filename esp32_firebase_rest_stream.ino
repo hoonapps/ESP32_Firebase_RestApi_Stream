@@ -36,8 +36,8 @@
 String Version = "1.0.0";
 
 String firebaseHost = "DATABASE_HOST_URL";
-String firebasePath = "DATABASE_PATH_UTL"; //  /test/stream.json
-String fireTestPath1 = "/test/stream/path1.json"
+String firebaseStreamingPath = "DATABASE_STREAMING_PATH_UTL"; // streaming url
+String firebasePutPath = "DATABASE_PUT_PATH_UTL"// put url
 
 String firebaseAuth = "";          // Id Token
 String firebaseRefreshToken = "";  // Refresh Token
@@ -172,15 +172,16 @@ void streamClientLoop(){
       ms = millis();
 
       //heartbeat 
-      if (putData(fireTestPath1.c_str(), cnt_heartbeat)) {
+      if (putData(firebasePutPath.c_str(), cnt_heartbeat)) {
         cnt_heartbeat++;
 
         if (cnt_heartbeat > 2147483640) {  // Max value
         cnt_heartbeat = 100;
         cnt_led = 100;
+        }
       }
-    }
-  } 
+    } 
+  }
 }
 
 void resetLoop(){
@@ -378,7 +379,7 @@ bool connectToFirebaseStream(){
   lastReconnectAttempt = millis();
 
   // Create Firebase stream URL 
-  String url = String("https://") + firebaseHost.c_str() + firebasePath + "?auth=" + firebaseAuth.c_str();
+  String url = String("https://") + firebaseHost.c_str() + firebaseStreamingPath + "?auth=" + firebaseAuth.c_str();
 
   // Connect Firebase
   Serial.print("Connecting to Firebase...");
@@ -462,7 +463,7 @@ bool connectToRedirectedStream(const String& newUrl){
     if (line == "\r") {
         Serial.println("HTTP headers received from redirected host.");
 
-        if (putData(fireTestPath1.c_str(), 0)) {
+        if (putData(firebasePutPath.c_str(), 0)) {
             Serial.println("path1 successfully reset to 0.");
         } else {
             Serial.println("Failed to reset path1.");
